@@ -4,19 +4,13 @@ echo "$1"
 
 if  [ "$1" = "images" ]
 then
-        echo "enter verb type"
-        read verb
-        echo "enter object type"
-        read object
         kubectl get ns
         echo "enter namespace"
         read namespace
-        kubectl $verb $object -n $namespace --show-labels
-        echo "enter labels to find: format key=value"
-        read labels
-        kubectl $verb  $object -n $namespace --show-labels | grep -i $labels > pod.text
-        PODNAME=$(awk '{print $1}' pod.text | head -1 )
-        echo "IMAGE NAME"; kubectl $verb $object $PODNAME -n $namespace -o json | jq .spec.containers | jq .[].image | sed 's/"//g'
+        kubectl get pods -n $namespace --show-labels
+        echo " enter PodName "
+        read podname
+        echo -n "IMAGE NAME="; kubectl get pods $podname -n $namespace -o jsonpath={.spec.containers[0].image}
 elif [ "$1" = "logs" ]
 then
     echo " Getting Logs "
